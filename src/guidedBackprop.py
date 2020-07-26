@@ -2,6 +2,7 @@ import tensorflow as tf
 import cv2
 import numpy as np
 from tensorflow.keras.models import Model
+from tensorflow.python.framework import ops
 
 # Reference: https://github.com/eclique/keras-gradcam with adaption to tensorflow 2.0
 class GuidedBackprop:

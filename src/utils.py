@@ -23,7 +23,7 @@ def predict(model, processed_im):
     preds = model.predict(processed_im)
     idx = preds.argmax()
 
-    res = [DECODE[idx], preds.max()]
+    res = [idx, preds.max()]
 
     return res
 
