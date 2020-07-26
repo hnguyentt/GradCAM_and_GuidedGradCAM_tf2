@@ -1,4 +1,12 @@
-tensorflow==2.2.0
-opencv_python
-numpy
-matplotlib
+pip install tensorflow==2.2.0
+pip install opencv_python
+pip install numpy
+pip install matplotlib
+pip install hide-code==0.5.2
+pip install ipywidgets
+
+jupyter nbextension enable --py widgetsnbextension --user
+jupyter nbextension install --py hide_code --user
+jupyter nbextension enable --py hide_code --user
+jupyter serverextension enable --py hide_code --user
+
