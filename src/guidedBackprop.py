@@ -3,13 +3,21 @@ import cv2
 import numpy as np
 from tensorflow.keras.models import Model
 from tensorflow.python.framework import ops
+from tensorflow.keras import backend as K
 
-# Reference: https://github.com/eclique/keras-gradcam with adaption to tensorflow 2.0
+@tf.custom_gradient
+def guidedRelu(x):
+    def grad(dy):
+        return tf.cast(dy>0,"float32") * tf.cast(x>0, "float32") * dy
+    return tf.nn.relu(x), grad
+
+# Reference: https://github.com/eclique/keras-gradcam with adaption to tensorflow 2.0  
 class GuidedBackprop:
-    def __init__(self, model, layerName=None):
+    def __init__(self,model, layerName=None):
         self.model = model
         self.layerName = layerName
-
+        self.gbModel = self.build_guided_model()
+        
         if self.layerName == None:
             self.layerName = self.find_target_layer()
 
@@ -19,39 +27,24 @@ class GuidedBackprop:
                 return layer.name
         raise ValueError("Could not find 4D layer. Cannot apply Guided Backpropagation")
 
-    def build_model(self):
-        return tf.keras.models.clone_model(self.model)
-
     def build_guided_model(self):
-        """Function returning modified model.
-
-        Changes gradient function for all ReLu activations
-        according to Guided Backpropagation.
-        """
-        if "GuidedBackProp" not in ops._gradient_registry._registry:
-            @ops.RegisterGradient("GuidedBackProp")
-            def _GuidedBackProp(op, grad):
-                dtype = op.inputs[0].dtype
-                return grad * tf.cast(grad > 0., dtype) * \
-                       tf.cast(op.inputs[0] > 0., dtype)
-
-        g = tf.compat.v1.get_default_graph()
-        with g.gradient_override_map({'Relu': 'GuidedBackProp'}):
-            new_model = self.build_model()
-
-        return new_model
-
+        gbModel = Model(
+            inputs = [self.model.inputs],
+            outputs = [self.model.get_layer(self.layerName).output]
+        )
+        layer_dict = [layer for layer in gbModel.layers[1:] if hasattr(layer,"activation")]
+        for layer in layer_dict:
+            if layer.activation == tf.keras.activations.relu:
+                layer.activation = guidedRelu
+        
+        return gbModel
+    
     def guided_backprop(self, images, upsample_size):
         """Guided Backpropagation method for visualizing input saliency."""
-        guided_model = self.build_guided_model()
-        gbModel = Model(
-            inputs=[guided_model.input],
-            outputs=[guided_model.get_layer(self.layerName).output]
-        )
         with tf.GradientTape() as tape:
             inputs = tf.cast(images, tf.float32)
             tape.watch(inputs)
-            outputs = gbModel(inputs)
+            outputs = self.gbModel(inputs)
 
         grads = tape.gradient(outputs, inputs)[0]
 
@@ -59,18 +52,15 @@ class GuidedBackprop:
 
         return saliency
 
-
 def deprocess_image(x):
-    '''
-    Same normalization as in:
+    """Same normalization as in:
     https://github.com/fchollet/keras/blob/master/examples/conv_filter_visualization.py
-    '''
-    if np.ndim(x) > 3:
-        x = np.squeeze(x)
-    # normalize tensor: center on 0., ensure std is 0.1
+    """
+    # normalize tensor: center on 0., ensure std is 0.25
+    x = x.copy()
     x -= x.mean()
-    x /= (x.std() + 1e-5)
-    x *= 0.1
+    x /= (x.std() + K.epsilon())
+    x *= 0.25
 
     # clip to [0, 1]
     x += 0.5
@@ -78,7 +68,7 @@ def deprocess_image(x):
 
     # convert to RGB array
     x *= 255
-    #     if K.image_dim_ordering() == 'th':
-    #         x = x.transpose((1, 2, 0))
+    if K.image_data_format() == 'channels_first':
+        x = x.transpose((1, 2, 0))
     x = np.clip(x, 0, 255).astype('uint8')
     return x

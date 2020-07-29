@@ -2,6 +2,7 @@
 from tensorflow.keras.models import Model
 from tensorflow.keras.applications import ResNet50V2
 from tensorflow.keras.layers import Dense, Flatten, Activation
+from tensorflow.keras.applications.resnet50 import ResNet50
 
 MODEL_DIR = "./assets/models"
 
@@ -59,6 +60,9 @@ def load_ResNet50PlusFC():
     logits = Dense(2)(fc2)
     output = Activation('softmax')(logits)
     model = Model(resnet.input, output)
-    model.load_weights("{}/resnet50fcbest.hdf5")
+    model.load_weights("{}/resnet50fcbest.hdf5".format(MODEL_DIR))
 
     return model
+
+def load_ResNet50():
+    return ResNet50(include_top=True, weights='imagenet')

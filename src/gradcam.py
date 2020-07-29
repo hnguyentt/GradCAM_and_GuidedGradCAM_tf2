@@ -48,7 +48,7 @@ class GradCAM:
         # Apply reLU
         cam = np.maximum(cam, 0)
         cam = cam / np.max(cam)
-        cam = cv2.resize(cam, upsample_size)
+        cam = cv2.resize(cam, upsample_size,cv2.INTER_LINEAR)
 
         # convert to 3D
         cam3 = np.expand_dims(cam, axis=2)

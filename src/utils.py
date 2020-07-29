@@ -8,7 +8,8 @@ from io import BytesIO
 
 SAMPLE_DIR = "./assets/samples"
 TARGET_SIZE = (224,224)
-DECODE = {0:"cat", 1:"dog"}
+DECODE = {0:"Cat", 1:"Dog"}
+INV_MAP = {"Cat": 0, "Dog": 1}
 
 
 def preprocess(filename):
