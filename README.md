@@ -17,7 +17,12 @@ bash requirements.txt
 ## Demo
 Run file `Visualization.ipynb`
 
-![img](assets/illustrations/demo.gif)
+[img](assets/illustrations/demo.gif)
+* Model: There are two trained models, which are
+    * VanilaResNet50: Keep the same architecture of ResNet50, replace the output layer on ImageNet and re-train with Dog vs. Cat data.
+    * ResNet50PlusFC: Add 2 fully connected layers between `Average Pooling` layer and output layer and train on Dog vs. Cat data.
+* Image: There are some available sample images in `assets/samples`, if you want to run your own ones, put them in this folder to be displayed on the dropdown list.
+* Class: This will be the class for GradCAM and Guided GradCAM visualization.
 
 ## References:
 * GradCAM paper: https://arxiv.org/abs/1610.02391
