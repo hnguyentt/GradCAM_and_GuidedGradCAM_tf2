@@ -1,4 +1,4 @@
-pip install tensorflow==2.2.0
+conda install tensorflow==2.2.0
 pip install opencv_python
 pip install numpy
 pip install matplotlib
