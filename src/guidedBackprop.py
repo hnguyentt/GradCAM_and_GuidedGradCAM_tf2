@@ -16,11 +16,10 @@ class GuidedBackprop:
     def __init__(self,model, layerName=None):
         self.model = model
         self.layerName = layerName
-        self.gbModel = self.build_guided_model()
-        
         if self.layerName == None:
             self.layerName = self.find_target_layer()
-
+        self.gbModel = self.build_guided_model()
+        
     def find_target_layer(self):
         for layer in reversed(self.model.layers):
             if len(layer.output_shape) == 4:
