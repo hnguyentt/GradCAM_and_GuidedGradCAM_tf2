@@ -15,7 +15,10 @@ bash requirements.txt
 ```
 
 ## Demo
-Run file `Visualization.ipynb`
+You can run on your own resources with the file `Visualization.ipynb`
+
+Otherwise, you can run on Google Colab easily via this link: https://colab.research.google.com/github/nguyenhoa93/GradCAM_and_GuidedGradCAM_tf2/blob/master/Visualization.ipynb (Don't forget to change your runtim to Python3 and choose GPU as your hardware accelerator.)
+
 
 ![img](assets/illustrations/demo.gif)
 * Model: There are two trained models, which are
