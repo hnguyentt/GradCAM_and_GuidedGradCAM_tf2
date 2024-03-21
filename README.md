@@ -1,4 +1,6 @@
 # Demo GradCAM & Guided GradCAM
+<a href="https://colab.research.google.com/github/hnguyentt/GradCAM_and_GuidedGradCAM_tf2/blob/master/Visualization.ipynb" target="_parent"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/></a>
+
 > On [Dogs vs. Cat data](https://www.kaggle.com/c/dogs-vs-cats)
 
 > Architecture: ResNet50 & ResNet50 + FC layers
